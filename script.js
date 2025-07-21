@@ -3,7 +3,7 @@ let results = [];
 const adminKey = "admin123"; //Change to desired admin password
 
 //Adding new team
-document.getElementById("teamForm").addEventListener("submit", e => {
+document.getElementById("teamform").addEventListener("submit", e => {
   e.preventDefault();
   const teamName = document.getElementById("teamName").value.trim();
   if (teamName && !teams.includes(teamName)) {
