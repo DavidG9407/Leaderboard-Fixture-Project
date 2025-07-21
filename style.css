@@ -56,3 +56,22 @@ ul#resultsList button {
   margin-left: 10px;
   cursor: pointer;
 }
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  table {
+    font-size: 14px;
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
+
+  input, button {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+}
