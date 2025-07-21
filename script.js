@@ -168,5 +168,5 @@ function updateLeaderboard() {
 
 //Initalizes
 updateTeams();
-updateTeams();
+updateResults();
 updateLeaderboard();
