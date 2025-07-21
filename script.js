@@ -158,4 +158,4 @@ function updateLeaderboard() {
 }
 
 //Initalize team selectors on page load
-updateTeam();
+updateTeams();
