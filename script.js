@@ -154,6 +154,7 @@ function updateLeaderboard() {
       <td>${stats.lost}</td>
       <td>${stats.gf}</td>
       <td>${stats.ga}</td>
+      <td>${stats.gd}</td>
     `;
     tbody.appendChild(row);
   });
