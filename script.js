@@ -126,7 +126,6 @@ function updateLeaderboard() {
     else {
       a.draw++; b.draw++; a.points++; b.points++;
     
-  const gd = stats.gf - stats.ga;
     }
   });
   
