@@ -1,82 +1,158 @@
-const form = document.getElementById("scoreForm");
-const matchList = document.getElementById("matchList");
-const leaderboardTable = document.querySelector("#leaderboardTable tbody");
+let teams = [];
+let results = [];
+const adminKey = "admin123"; //Change to desired admin password
 
-let matches = JSON.parse(localStorage.getItem("matches")) || {};
-
-function saveMatches() {
-  localStorage.setItem("matches", JSON.stringify(matches));
-}
-
-function renderMatches() {
-  matchList.innerHTML = "";
-  matches.forEach(match => {
-    const item = document.createElement("li");
-    item.textContent = '${match.team1} ${match.score1} - ${match.score2} ${match.team2};
-    matchList.appendChild(item);
-  });
-}
-
-function renderLeaderboard() {
-  const leaderboard = {};
-
-  matches.forEach(({ team1, score1, team2, score2 }) => {
-    if (!leaderboard[team1]) leaderboard[team1] = {played: 0, wins: 0, losses: 0, gd: 0};
-    if (!leaderboard[team2]) leaderboard[team2] = {played: 0, wins: 0, losses: 0, gd: 0);
-
-    leaderboard[team1].player++;
-    leaderboard[team2].played++;
-
-    leaderboard[team1].gd += score1 - score2;
-    leaderboard[team2].gd += score2 - score1;
-
-    if (score1 > score2) {
-      leaderboard[team1].wins++;
-      leaderboard[team2].lossess++;
-    } 
-    else if (score2 > score1> {
-      leaderboard[team2].wins++;
-      leaderboard[team1].losses++;
-    }
-  });
-  
-  const sortedTeams = Object.entries(leaderboard).sort((a, b) => {
-    const teamA = a[1];
-    const teamB = b[1];
-    if (teamB.wins !== teamA.wins) return teamB.wins - teamA.wins;
-    return teamB.gd - teamA.gd;
-  });
-  
-  leaderboardTable.innerHTML = "";
-  sortedTeams.forEach(([name, data]) => {
-    const row = document.createElement("tr");
-    row.innerHTML = '
-      <td>${name}</td>
-      <td>${data.played}</td>
-      <td>${data.wins}</td>
-      <td>${data.losses}</td>
-      <td>${data.gd}</td>
-    ';
-    leaderboardTable.appendChild(row);
-  });
-}
-
-form.addEventListener("submit", (e) => {
+//Adding new team
+document.getElementById("teamForm").addEventListener("submit, e => {
   e.preventDefault();
-  const team1 = document.getElementById("team1").value.trim();
-  const score1 = parseInt(document.getElementById("score1").value);
-  const team2 = document.getElementById("team2").value.trim();
-  const score2 = parseInt(document.getElementById("score2").value);
-
-  if (team1 && team2 && !isNaN(score1) && !isNaN(score2)) {
-    matches.push({ team1, score1, team2, score2 });
-    saveMatches();
-    renderMatches();
-    renderLeaderboard();
-    form.reset();
+  const teamName = document.getElementById("teamname").value.trim();
+  if (teamName && !teams.includes(teamName)) {
+    teams.push(teamName);
+    updateTeams();
+    document.getElementById("teamName").value = "";
+  }
+  else if (teams.includes(teamName)) {
+    alert("Team already exists");
   }
 });
 
-// Rendering
-renderMatches();
-renderLeaderboard();
+//Update team lists and team display
+function updateTeams() {
+  const teamList = document.getElementById("teamList");
+  const team1Select = document.getElementById("team1");
+  const team2Select = document.getElementById("team2");
+
+  teamList.innerHTML = "";
+  team1Select.innerHTML = "<option value=''>Select Team</option>";
+  team2Select.innerHTML = "<option value=''>Select Team</option>";
+  
+  teams.forEach(team => {
+    //Display teams list
+    const li = document.createElement("li");
+    li.textContent = team;
+    teamList.appendChild(li);
+  
+    //Add to match entries
+    [team1Select, team2Select].forEach(select => {
+      const option = document.createElement("option");
+      option.value = team;
+      option.textContent = team;
+      select.appendChild(option);
+    });
+  });
+}
+
+//Submitting match result
+document.getElementById("matchForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const t1 = document.getElementById("team1").value;
+  const t2 = document.getElementById("team2").value;
+  const s1 = parseInt(document.getElementById("score1").value);
+  const s2 = parseInt(document.getElementById("score2").value);
+  const password = document.getElementById("adminPassword").value;
+
+  if (password !== adminKey) {
+    alert("Incorrect admin password.");
+    return;
+  }
+
+  if (!t1 || !t2 || t1 === t2) {
+    alert("Please select two different teams.");
+    return;
+  }
+
+  if (isNaN(s1) || isNaN(s2) || s1 < 0 || s2 < 0) {
+    alert("Please enter valid scores.");
+    return;
+  }
+
+  //Add match results
+  results.push({ t1, s1, t2, s2 });
+  updateResults();
+  updateLeaderboard();
+  e.target.reset();
+});
+
+//Display all results with delete
+function updateResults() {
+  const list = document.getElementById("resultsList");
+  list.innerHTML = "";
+
+  results.forEach((r, index) => {
+    const li = document.createElement("li");
+    li.textContent = '${r.t1} ${r.s1} - ${r.s2} ${r.t2}';
+
+    const del = document.createElement("button");
+    del.textContent = "Delete";
+    del.title = "Delete this match results";
+
+    del.onclick = () => {
+      const pw = prompt("Enter admin password to delete:");
+      if (pw === adminKey) {
+        results.splice(index, 1);
+        updateResults();
+        updateLeaderboard();
+      }
+      else {
+        alert("Incorrect password");
+      }
+    };
+
+    li.appendChild(del);
+    list.appendChild(li);
+  });
+}
+
+//Calculate + Update Leaderboard
+function updateLeaderboard() {
+  const board = {};
+
+  teams.forEach(t => {
+    board[t] = { points: 0, played: 0, won: 0, draw: 0, lost: 0, gf: 0, ga: 0 };
+  });
+  
+  results.forEach(r => {
+    const a = board[r.ti], b = board[r.t2];
+    a.played++; b.played++;
+    a.gf += r.s1; a.ga += r.s2;
+    b.gf += r.s2; b.ga += r.s1
+  
+    if (r.s1 > r.s2) {
+      a.won++; b.lost++; a.points += 3;
+    }
+    else if (r.s1 < r.s2) {
+      b.won++; a.lost++; b.points += 3;
+    }
+    else {
+      a.draw++; b.draw++; a.points++; b.points++;
+    }
+  });
+  
+  const tbody = document.getElementById("leaderboardBody");
+  tbody.innerHTML = "";
+  
+  //Sort by points, then gd, then gf
+  Object.entries(board).sort((a, b) => {
+    const pointsDiff = b[1].points - a[1].points;
+    if (pointsDiff !== 0) return pointsDiff;
+  
+    const goalDiffA = a[1].gf - a[1].ga;
+    const goalDiffB = b[1].gf - b[1].ga;
+    if (goalDiffB !== goalDiffA) return goalDiffB - goalDiffA;
+  
+    return b[1].gf - a[1].gf;
+  }).forEach(([team, stats]) => {
+    const row = document.createElement("tr");
+    row.innerHTML = '
+      <td>${team}</td>
+      <td>${stats.points}</td>
+      <td>${stats.played}</td>
+      <td>${stats.won}</td>
+      <td>${stats.draw}</td>
+      <td>${stats.lost}</td>
+      <td>${stats.gf}</td>
+      <td>${stats.ga}</td>
+    ';
+    tbody.appendChild(row);
+  });
+}
