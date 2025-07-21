@@ -108,7 +108,7 @@ function updateLeaderboard() {
   const board = {};
 
   teams.forEach(t => {
-    board[t] = { points: 0, played: 0, won: 0, draw: 0, lost: 0, gf: 0, ga: 0 };
+    board[t] = { points: 0, played: 0, won: 0, draw: 0, lost: 0, gf: 0, ga: 0, gd: 0};
   });
   
   results.forEach(r => {
@@ -144,6 +144,7 @@ function updateLeaderboard() {
   
     return b[1].gf - a[1].gf;
   }).forEach(([team, stats]) => {
+    stats.gd = stats.gf - stats.ga;
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${team}</td>
