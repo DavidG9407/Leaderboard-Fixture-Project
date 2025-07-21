@@ -1,46 +1,46 @@
 body {
   font-family: Arial, san-serif;
-  background: #f3f3f3;
+  background: #f4f4f4;
   padding: 20px;
-  color: #333;
+  margin: 0;
 }
 
 .container {
   max-width: 800px;
   margin: auto;
-  background: white;
+  background: #fff;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
 }
 
 h1, h2 {
-  text-align: center;
-  color: #2c3e50;
+  color: #333;
 }
 
-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-form input, form button {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+form input, form select, form button {
+  margin: 5px 0;
+  padding: 8px;
+  font-size: 16px;
 }
 
 form button {
-  background: #3498db;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s ease;
+    cursor: pointer;
 }
 
-form button:hover {
-  background: #2980b9;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th,td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+thead {
+  background: #eee;
 }
 
 ul {
@@ -48,26 +48,11 @@ ul {
   padding: 0;
 }
 
-li {
-  margin-bottom: 5px;
+ul#resultsList li {
+  margin-bottom: 8px;
 }
 
-table {
-  width: 100%
-  border-collapse: collapse;
-  margin-top: 10px;
+ul#resultsList button {
+  margin-left: 10px;
+  cursor: pointer;
 }
-
-table, th, td {
-  border: 1px solid #ddd;
-}
-
-th, td {
-  text-align: center;
-  padding: 10px;
-}
-
-thead {
-  background-color: #ecf0f1;
-}
-  
