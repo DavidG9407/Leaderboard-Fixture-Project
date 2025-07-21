@@ -1,6 +1,12 @@
-let teams = [];
-let results = [];
+let teams = JSON.parse(localStorage.getItem("teams")) || [];
+let results = JSON.parse(localStorage.getItem("results")) || [];
 const adminKey = "admin123"; //Change to desired admin password
+
+//Saving to local storage
+function saveData() {
+  localStorage.setItem("teams", JSON.stringify(teams));
+  localStorage.setItem("results", JSON.stringify(results));
+}
 
 //Adding new team
 document.getElementById("teamForm").addEventListener("submit", e => {
@@ -8,6 +14,7 @@ document.getElementById("teamForm").addEventListener("submit", e => {
   const teamName = document.getElementById("teamName").value.trim();
   if (teamName && !teams.includes(teamName)) {
     teams.push(teamName);
+    saveData();
     updateTeams();
     document.getElementById("teamName").value = "";
   }
@@ -68,6 +75,7 @@ document.getElementById("matchForm").addEventListener("submit", e => {
 
   //Add match results
   results.push({ t1, s1, t2, s2 });
+  saveData();
   updateResults();
   updateLeaderboard();
   e.target.reset();
@@ -90,6 +98,7 @@ function updateResults() {
       const pw = prompt("Enter admin password to delete:");
       if (pw === adminKey) {
         results.splice(index, 1);
+        saveData();
         updateResults();
         updateLeaderboard();
       }
@@ -108,7 +117,7 @@ function updateLeaderboard() {
   const board = {};
 
   teams.forEach(t => {
-    board[t] = { points: 0, played: 0, won: 0, draw: 0, lost: 0, gf: 0, ga: 0};
+    board[t] = { points: 0, played: 0, won: 0, draw: 0, lost: 0, gf: 0, ga: 0, gd: 0 };
   });
   
   results.forEach(r => {
@@ -125,8 +134,9 @@ function updateLeaderboard() {
     }
     else {
       a.draw++; b.draw++; a.points++; b.points++;
-    
     }
+    a.gd = a.gf - a.ga
+    b.gd = b.gf - b.ga
   });
   
   const tbody = document.getElementById("leaderboardBody");
@@ -136,14 +146,10 @@ function updateLeaderboard() {
   Object.entries(board).sort((a, b) => {
     const pointsDiff = b[1].points - a[1].points;
     if (pointsDiff !== 0) return pointsDiff;
-  
-    const goalDiffA = a[1].gf - a[1].ga;
-    const goalDiffB = b[1].gf - b[1].ga;
-    if (goalDiffB !== goalDiffA) return goalDiffB - goalDiffA;
-  
+    const gdDiff = b[1].gd - a[1].gd
+    if (gdDiff !== 0) return gdDiff;
     return b[1].gf - a[1].gf;
   }).forEach(([team, stats]) => {
-    stats.gd = stats.gf - stats.ga;
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${team}</td>
@@ -160,5 +166,7 @@ function updateLeaderboard() {
   });
 }
 
-//Initalize team selectors on page load
+//Initalizes
 updateTeams();
+updateTeams();
+updateLeaderboard();
