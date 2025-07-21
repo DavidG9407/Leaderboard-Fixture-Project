@@ -3,9 +3,9 @@ let results = [];
 const adminKey = "admin123"; //Change to desired admin password
 
 //Adding new team
-document.getElementById("teamForm").addEventListener("submit, e => {
+document.getElementById("teamForm").addEventListener("submit", e => {
   e.preventDefault();
-  const teamName = document.getElementById("teamname").value.trim();
+  const teamName = document.getElementById("teamName").value.trim();
   if (teamName && !teams.includes(teamName)) {
     teams.push(teamName);
     updateTeams();
@@ -80,7 +80,7 @@ function updateResults() {
 
   results.forEach((r, index) => {
     const li = document.createElement("li");
-    li.textContent = '${r.t1} ${r.s1} - ${r.s2} ${r.t2}';
+    li.textContent = `${r.t1} ${r.s1} - ${r.s2} ${r.t2}`;
 
     const del = document.createElement("button");
     del.textContent = "Delete";
@@ -112,7 +112,7 @@ function updateLeaderboard() {
   });
   
   results.forEach(r => {
-    const a = board[r.ti], b = board[r.t2];
+    const a = board[r.t1], b = board[r.t2];
     a.played++; b.played++;
     a.gf += r.s1; a.ga += r.s2;
     b.gf += r.s2; b.ga += r.s1
@@ -143,7 +143,7 @@ function updateLeaderboard() {
     return b[1].gf - a[1].gf;
   }).forEach(([team, stats]) => {
     const row = document.createElement("tr");
-    row.innerHTML = '
+    row.innerHTML = `
       <td>${team}</td>
       <td>${stats.points}</td>
       <td>${stats.played}</td>
@@ -152,7 +152,10 @@ function updateLeaderboard() {
       <td>${stats.lost}</td>
       <td>${stats.gf}</td>
       <td>${stats.ga}</td>
-    ';
+    `;
     tbody.appendChild(row);
   });
 }
+
+//Initalize team selectors on page load
+updateTeam();
